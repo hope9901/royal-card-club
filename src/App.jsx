@@ -5,6 +5,12 @@ import BlackjackGame from "./components/BlackjackGame";
 import HoldemGame from "./components/HoldemGame";
 import { Coins } from "lucide-react";
 
+const getApiUrl = () => {
+  // Dynamically resolve server IP to support mobile devices connecting via local Wi-Fi
+  const hostname = typeof window !== "undefined" ? window.location.hostname : "localhost";
+  return `http://${hostname}:5000/api/rankings`;
+};
+
 export default function App() {
   // 1. Session and Database states
   const [playerName, setPlayerName] = useState(() => {
@@ -34,7 +40,7 @@ export default function App() {
 
   const fetchRankings = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/rankings");
+      const res = await fetch(getApiUrl());
       if (res.ok) {
         const data = await res.json();
         setRankings(data);
@@ -46,7 +52,7 @@ export default function App() {
 
   const saveRanking = async (name, balance) => {
     try {
-      const res = await fetch("http://localhost:5000/api/rankings", {
+      const res = await fetch(getApiUrl(), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, maxBalance: balance })
