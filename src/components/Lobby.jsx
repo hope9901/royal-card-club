@@ -125,9 +125,9 @@ export default function Lobby({
               </div>
               <div className="game-card-body">
                 <h3>텍사스 홀덤 포커 (Texas Hold'em)</h3>
-                <p>5장 미니 포커와 7장 정통 홀덤 선택 가능! 컴퓨터를 상대로 칩 베팅의 두뇌 싸움을 펼칩니다.</p>
+                <p>컴퓨터를 상대로 실시간 칩 배팅 심리전을 펼치는 정통 7장 텍사스 홀덤 카드 게임.</p>
                 <div className="game-card-footer">
-                  <span className="min-bet-badge">5장/7장 모드 지원</span>
+                  <span className="min-bet-badge">정통 7장 홀덤</span>
                   <button className="btn btn-primary btn-play">
                     <Play size={14} fill="white" /> 입장
                   </button>
@@ -233,12 +233,7 @@ export default function Lobby({
                   <p className="rule-intro-text">컴퓨터를 상대로 배팅 심리전을 거쳐, 공유 카드와 개인 카드로 족보를 완성하여 겨루는 카드 게임입니다.</p>
                   
                   <ul className="rules-bullet-list">
-                    <li><strong>게임 모드:</strong>
-                      <ul>
-                        <li><strong>7장 모드:</strong> 내 패 2장 + 커뮤니티 카드 5장을 깝니다. 총 7장 중 최상의 5장을 조합하여 경쟁합니다.</li>
-                        <li><strong>5장 모드 (미니 홀덤):</strong> 내 패 2장 + 커뮤니티 카드 3장(Flop만 진행)을 깝니다. 총 5장으로 족보를 겨루는 템포 빠른 게임입니다.</li>
-                      </ul>
-                    </li>
+                    <li><strong>게임 방식:</strong> 내 카드 2장 + 커뮤니티 카드 5장을 깝니다. 총 7장의 카드 중에서 최상의 5장 조합을 자동으로 선택하여 Host의 조합과 대결합니다.</li>
                     <li><strong>배팅 옵션:</strong>
                       <ul>
                         <li><strong>Fold:</strong> 기권 (배팅한 돈을 잃고 라운드 포기)</li>
