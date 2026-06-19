@@ -5,11 +5,7 @@ import BlackjackGame from "./components/BlackjackGame";
 import HoldemGame from "./components/HoldemGame";
 import { Coins } from "lucide-react";
 
-const getApiUrl = () => {
-  // Dynamically resolve server IP to support mobile devices connecting via local Wi-Fi
-  const hostname = typeof window !== "undefined" ? window.location.hostname : "localhost";
-  return `http://${hostname}:5000/api/rankings`;
-};
+const KVDB_API_URL = "https://kvdb.io/yH6aW4B9o9T9gS7mS2v9/rankings";
 
 export default function App() {
   // 1. Session and Database states
@@ -40,28 +36,81 @@ export default function App() {
 
   const fetchRankings = async () => {
     try {
-      const res = await fetch(getApiUrl());
+      const res = await fetch(KVDB_API_URL);
       if (res.ok) {
         const data = await res.json();
-        setRankings(data);
+        if (Array.isArray(data)) {
+          setRankings(data);
+        } else {
+          setRankings([]);
+        }
+      } else {
+        setRankings([]);
       }
     } catch (e) {
-      console.error("Failed to fetch rankings from server:", e);
+      console.error("Failed to fetch rankings from kvdb.io:", e);
+      setRankings([]);
     }
   };
 
   const saveRanking = async (name, balance) => {
     try {
-      const res = await fetch(getApiUrl(), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, maxBalance: balance })
-      });
+      // 1. Fetch latest rankings list first to prevent overwriting others
+      const res = await fetch(KVDB_API_URL);
+      let currentRankings = [];
       if (res.ok) {
-        fetchRankings(); // Refresh list from database
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          currentRankings = data;
+        }
+      }
+
+      // 2. Compute updated rankings list locally
+      const existsIdx = currentRankings.findIndex((item) => item.name === name);
+      let newRankings = [...currentRankings];
+      
+      const todayStr = new Date().toLocaleDateString("ko-KR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      });
+
+      if (existsIdx !== -1) {
+        // Update only if new balance is higher
+        if (balance > newRankings[existsIdx].maxBalance) {
+          newRankings[existsIdx] = {
+            name,
+            maxBalance: balance,
+            date: todayStr
+          };
+        } else {
+          return; // Skip write if existing database record is higher
+        }
+      } else {
+        // Add new record
+        newRankings.push({
+          name,
+          maxBalance: balance,
+          date: todayStr
+        });
+      }
+
+      // Sort by max balance descending and limit to Top 50
+      newRankings.sort((a, b) => b.maxBalance - a.maxBalance);
+      newRankings = newRankings.slice(0, 50);
+
+      // 3. Upload entire rankings array back via HTTP PUT
+      const putRes = await fetch(KVDB_API_URL, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newRankings)
+      });
+
+      if (putRes.ok) {
+        setRankings(newRankings);
       }
     } catch (e) {
-      console.error("Failed to save ranking to database:", e);
+      console.error("Failed to save ranking to kvdb.io:", e);
     }
   };
 
