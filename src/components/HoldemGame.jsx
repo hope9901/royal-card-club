@@ -563,7 +563,7 @@ export default function HoldemGame({ playerName, currentMoney, onUpdateMoney, on
 
         {/* Announcement Message Box */}
         <div className="game-announcer glass">
-          {message || `${gameMode === "7card" ? "7장 정통 홀덤" : "5장 플랍 홀덤"} 대결을 진행합니다. 안테를 지불하고 시작하세요.`}
+          {message || "7장 정통 홀덤 대결을 진행합니다. 안테를 지불하고 시작하세요."}
         </div>
 
         {/* Player Hand Zone */}
