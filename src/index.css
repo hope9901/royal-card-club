@@ -1346,3 +1346,182 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+/* --- Mobile Responsive Fixes (768px and below) --- */
+@media (max-width: 768px) {
+  /* Header and Lobby Brand */
+  .casino-app-bar {
+    padding: 0.5rem 1rem;
+  }
+  .brand-text {
+    font-size: 1.1rem;
+  }
+  
+  /* Lobby Profile & Money info */
+  .lobby-profile-header {
+    padding: 1rem;
+    gap: 1rem;
+  }
+  .profile-details {
+    gap: 0.75rem;
+  }
+  .profile-avatar {
+    width: 44px;
+    height: 44px;
+    font-size: 0.9rem;
+  }
+  .name-display h2 {
+    font-size: 1.1rem;
+  }
+  .profile-money-area {
+    width: 100%;
+    justify-content: space-around;
+    gap: 1rem;
+  }
+  .money-value {
+    font-size: 1.2rem;
+  }
+  .divider-left {
+    padding-left: 1rem;
+  }
+
+  /* Lobby Game Cards */
+  .game-menu-card {
+    height: auto;
+    min-height: 300px;
+  }
+  .game-banner {
+    height: 100px;
+  }
+  .game-card-icon {
+    font-size: 3rem;
+  }
+  
+  /* Game Table Layout */
+  .table-header {
+    padding: 0.5rem 1rem;
+  }
+  .table-title {
+    font-size: 1rem;
+  }
+  
+  /* Announcer Message */
+  .game-announcer {
+    margin: 0.75rem auto;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  /* Card Scaling for Mobile Screen (Crucial to avoid overflow) */
+  .card-wrapper {
+    width: 60px;
+    height: 87px;
+  }
+  .card-front {
+    padding: 0.25rem;
+  }
+  .card-value-text {
+    font-size: 0.9rem;
+  }
+  .card-center-suit {
+    width: 24px;
+    height: 24px;
+  }
+  .corner-suit-wrapper {
+    width: 8px;
+    height: 8px;
+  }
+  .empty-cards-placeholder {
+    width: 60px;
+    height: 87px;
+    font-size: 0.7rem;
+    text-align: center;
+  }
+  .empty-community-placeholder {
+    font-size: 0.75rem;
+    padding: 1rem;
+    height: 87px;
+  }
+  .cards-row, .community-cards-row {
+    min-height: 90px;
+    gap: 0.4rem;
+  }
+  
+  /* Winner highlighting sizing adjustments */
+  .card-wrapper.highlighted-win {
+    transform: scale(1.05) translateY(-4px);
+    box-shadow: 0 0 10px #d4af37, 0 5px 10px rgba(0,0,0,0.5);
+  }
+
+  /* Action Panels */
+  .table-controls-panel {
+    padding: 1rem;
+    width: calc(100% - 1rem);
+  }
+  .table-money-dashboard {
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .money-item {
+    font-size: 0.8rem;
+  }
+  .money-item strong {
+    font-size: 0.95rem;
+  }
+  
+  /* Chip buttons */
+  .chip-selector-group {
+    gap: 0.4rem;
+  }
+  .chip-btn {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.75rem;
+  }
+  
+  /* Betting options */
+  .blackjack-actions-row, .poker-bet-options {
+    gap: 0.4rem;
+  }
+  .btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+    border-radius: 6px;
+  }
+  .poker-bet-options button, .blackjack-actions-row button {
+    font-size: 0.75rem;
+  }
+}
+
+/* Very Small Mobile screen corrections */
+@media (max-width: 480px) {
+  .cards-row, .community-cards-row {
+    gap: 0.25rem;
+  }
+  .card-wrapper {
+    width: 48px;
+    height: 70px;
+  }
+  .empty-cards-placeholder {
+    width: 48px;
+    height: 70px;
+  }
+  .cards-row, .community-cards-row {
+    min-height: 75px;
+  }
+  .card-value-text {
+    font-size: 0.8rem;
+  }
+  .card-center-suit {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .lobby-leaderboard-section {
+    padding: 1rem;
+  }
+  .ranking-table th, .ranking-table td {
+    padding: 0.5rem 0.25rem;
+    font-size: 0.75rem;
+  }
+}
+

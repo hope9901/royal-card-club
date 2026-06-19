@@ -91,8 +91,18 @@ export default function HoldemGame({ playerName, currentMoney, onUpdateMoney, on
 
   const handleCall = () => {
     const callCost = currentCallAmount - playerBetThisRound;
+    
     if (callCost > currentMoney) {
-      alert("콜을 외치기 위한 머니가 부족합니다. 올인을 진행해 주세요.");
+      // All-in Call situation
+      const allInAmount = currentMoney;
+      onUpdateMoney(-allInAmount);
+      setPlayerBetThisRound((prev) => prev + allInAmount);
+      setPot((prev) => prev + allInAmount);
+
+      setMessage(`플레이어가 남은 전 재산 ${formatMoney(allInAmount)}을 모두 걸고 올인(All-in Call) 했습니다!`);
+      setTimeout(() => {
+        runAllInShowdown();
+      }, 1200);
       return;
     }
 
@@ -104,6 +114,21 @@ export default function HoldemGame({ playerName, currentMoney, onUpdateMoney, on
     setTimeout(() => {
       advanceStage();
     }, 800);
+  };
+
+  const runAllInShowdown = () => {
+    setGameState("showdown");
+    let currentDeck = [...deck];
+    let updatedCommunity = [...communityCards];
+    
+    // Deal remaining community cards until we have 5
+    while (updatedCommunity.length < 5) {
+      updatedCommunity.push(currentDeck.pop());
+    }
+    
+    setCommunityCards(updatedCommunity);
+    setDeck(currentDeck);
+    resolveShowdown(updatedCommunity);
   };
 
   const handleAdjustRaise = (amount) => {
