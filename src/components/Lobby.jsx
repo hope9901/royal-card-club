@@ -121,7 +121,9 @@ export default function Lobby({
             {/* Texas Hold'em Card */}
             <div className="game-menu-card glass hover-lift" onClick={() => onSelectGame("holdem")}>
               <div className="game-banner holdem-bg">
-                <span className="game-card-icon">♠️</span>
+                <svg viewBox="0 0 16 16" fill="currentColor" style={{ width: "4rem", height: "4rem", color: "var(--color-gold)", filter: "drop-shadow(0 0 10px rgba(212, 175, 55, 0.4))" }}>
+                  <path d="M7.184 11.246A3.5 3.5 0 0 1 1 9c0-1.602 1.14-2.633 2.66-4.008C4.986 3.792 6.602 2.33 8 0c1.398 2.33 3.014 3.792 4.34 4.992C13.86 6.367 15 7.398 15 9a3.5 3.5 0 0 1-6.184 2.246 20 20 0 0 0 1.582 2.907c.231.35-.02.847-.438.847H6.04c-.419 0-.67-.497-.438-.847a20 20 0 0 0 1.582-2.907" />
+                </svg>
               </div>
               <div className="game-card-body">
                 <h3>텍사스 홀덤 포커 (Texas Hold'em)</h3>

@@ -1060,21 +1060,12 @@ h1, h2, h3, h4, h5, h6 {
 .spade-color, .club-color { fill: #0f172a; color: #0f172a; }
 .heart-color, .diamond-color { fill: #b91c1c; color: #b91c1c; }
 
-/* Unicode suit characters high-contrast styling */
-.suit-char {
+/* SVG suit icon styling */
+.suit-icon {
   display: block;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  line-height: 1;
-  text-align: center;
-  user-select: none;
-}
-
-.corner-suit-wrapper .suit-char {
-  font-size: 14px;
-}
-
-.card-center-suit .suit-char {
-  font-size: 42px;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 
 /* Back Face */
