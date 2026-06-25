@@ -1132,9 +1132,18 @@ h1, h2, h3, h4, h5, h6 {
   height: 100%;
   z-index: 400;
   display: flex;
-  align-items: flex-end;
   justify-content: center;
+  transition: all 0.25s ease-out;
+}
+
+.tour-overlay-container.position-bottom {
+  align-items: flex-end;
   padding-bottom: 2rem;
+}
+
+.tour-overlay-container.position-top {
+  align-items: flex-start;
+  padding-top: 5rem;
 }
 
 .tour-backdrop {
@@ -1154,6 +1163,7 @@ h1, h2, h3, h4, h5, h6 {
   z-index: 410;
   border-color: var(--color-gold);
   animation: tourDialogSlide 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  word-break: keep-all; /* Prevent letters from breaking mid-word */
 }
 
 .tour-header {
@@ -1513,8 +1523,11 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 0.75rem !important;
     line-height: 1.4 !important;
   }
-  .tour-overlay-container {
+  .tour-overlay-container.position-bottom {
     padding-bottom: 1rem !important;
+  }
+  .tour-overlay-container.position-top {
+    padding-top: 4.5rem !important;
   }
   .tour-footer {
     margin-top: 0.75rem !important;

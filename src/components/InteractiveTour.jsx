@@ -1,15 +1,52 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { ChevronRight, ChevronLeft, X, Sparkles } from "lucide-react";
 
 export default function InteractiveTour({ steps, activeStep, onNext, onPrev, onComplete }) {
+  const [position, setPosition] = useState("bottom");
+
+  const currentStep = (activeStep !== null && steps) ? steps[activeStep] : null;
+
+  useEffect(() => {
+    if (activeStep === null || !currentStep || !currentStep.target) {
+      setPosition("bottom");
+      return;
+    }
+
+    const checkPosition = () => {
+      const element = document.querySelector(currentStep.target);
+      if (element) {
+        const rect = element.getBoundingClientRect();
+        const elementCenterY = rect.top + rect.height / 2;
+        const viewportHeight = window.innerHeight;
+
+        // If active element is in the lower half of the viewport, place tour dialog at the top
+        if (elementCenterY > viewportHeight / 2) {
+          setPosition("top");
+        } else {
+          setPosition("bottom");
+        }
+      } else {
+        setPosition("bottom");
+      }
+    };
+
+    checkPosition();
+    const timer = setTimeout(checkPosition, 100);
+
+    window.addEventListener("resize", checkPosition);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("resize", checkPosition);
+    };
+  }, [activeStep, currentStep]);
+
   if (activeStep === null || !steps || steps.length === 0) return null;
 
-  const currentStep = steps[activeStep];
   const isFirst = activeStep === 0;
   const isLast = activeStep === steps.length - 1;
 
   return (
-    <div className="tour-overlay-container no-print">
+    <div className={`tour-overlay-container position-${position} no-print`}>
       {/* Dark backdrop */}
       <div className="tour-backdrop" onClick={onComplete}></div>
 
