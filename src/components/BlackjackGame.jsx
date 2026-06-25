@@ -23,10 +23,11 @@ export default function BlackjackGame({ playerName, currentMoney, onUpdateMoney,
 
   const throwChip = (amount, isPlayer) => {
     let remaining = amount;
-    const chipValues = [50000, 30000, 10000];
+    const chipValues = [10000000, 5000000, 1000000, 500000, 100000, 50000, 30000, 10000];
     const newChips = [];
 
-    chipValues.forEach((val) => {
+    for (let i = 0; i < chipValues.length; i++) {
+      const val = chipValues[i];
       while (remaining >= val) {
         newChips.push({
           id: `chip-${Date.now()}-${Math.random()}`,
@@ -37,10 +38,12 @@ export default function BlackjackGame({ playerName, currentMoney, onUpdateMoney,
           yOffset: Math.floor(Math.random() * 40 - 20)
         });
         remaining -= val;
+        if (newChips.length >= 15) break;
       }
-    });
+      if (newChips.length >= 15) break;
+    }
 
-    if (remaining > 0) {
+    if (remaining > 0 && newChips.length < 15) {
       newChips.push({
         id: `chip-${Date.now()}-${Math.random()}`,
         value: remaining,
@@ -514,7 +517,12 @@ export default function BlackjackGame({ playerName, currentMoney, onUpdateMoney,
       <div className="thrown-chips-layer no-print">
         {thrownChips.map((chip) => {
           let chipClass = "chip-1k";
-          if (chip.value >= 50000) chipClass = "chip-5k";
+          if (chip.value >= 10000000) chipClass = "chip-10m";
+          else if (chip.value >= 5000000) chipClass = "chip-5m";
+          else if (chip.value >= 1000000) chipClass = "chip-1m";
+          else if (chip.value >= 500000) chipClass = "chip-500k";
+          else if (chip.value >= 100000) chipClass = "chip-100k";
+          else if (chip.value >= 50000) chipClass = "chip-5k";
           else if (chip.value >= 30000) chipClass = "chip-3k";
           else if (chip.value >= 10000) chipClass = "chip-1k";
 
