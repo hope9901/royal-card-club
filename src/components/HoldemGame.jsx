@@ -46,7 +46,9 @@ export default function HoldemGame({ playerName, currentMoney, onUpdateMoney, on
           id: `chip-${Date.now()}-${Math.random()}`,
           value: val,
           isPlayer,
-          phase: "throwing" // "throwing", "collected"
+          phase: "throwing", // "throwing", "collected"
+          xOffset: Math.floor(Math.random() * 80 - 40),
+          yOffset: Math.floor(Math.random() * 40 - 20)
         });
         remaining -= val;
       }
@@ -57,7 +59,9 @@ export default function HoldemGame({ playerName, currentMoney, onUpdateMoney, on
         id: `chip-${Date.now()}-${Math.random()}`,
         value: remaining,
         isPlayer,
-        phase: "throwing"
+        phase: "throwing",
+        xOffset: Math.floor(Math.random() * 80 - 40),
+        yOffset: Math.floor(Math.random() * 40 - 20)
       });
     }
 
@@ -191,6 +195,7 @@ export default function HoldemGame({ playerName, currentMoney, onUpdateMoney, on
     
     if (maxAvailable <= 0) {
       setRaiseBetAmount(0);
+      alert("더 이상 추가 레이즈를 할 자본이 부족합니다. 올인 콜(All-in Call)만 가능합니다.");
       return;
     }
 
@@ -200,26 +205,39 @@ export default function HoldemGame({ playerName, currentMoney, onUpdateMoney, on
       setRaiseBetAmount((prev) => {
         const next = prev + amount;
         if (next < 10000) return 10000;
-        if (next > maxAvailable) return maxAvailable;
+        if (next > maxAvailable) {
+          alert(`더 이상 추가 레이즈할 자본이 부족합니다. 남은 전 재산인 ${formatMoney(maxAvailable)}으로 올인 레이즈(All-in Raise)를 설정합니다.`);
+          return maxAvailable;
+        }
         return next;
       });
     }
   };
 
   const handleRaise = () => {
-    const raiseAmt = raiseBetAmount;
+    let raiseAmt = raiseBetAmount;
     if (raiseAmt <= 0) {
       alert("레이즈할 수 있는 금액이 없습니다. 콜 또는 폴드를 해주세요.");
       return;
     }
 
-    const totalNewBet = currentCallAmount + raiseAmt;
-    const additionalCost = totalNewBet - playerBetThisRound;
-    
-    if (additionalCost > currentMoney) {
-      alert("레이즈를 위한 머니가 부족합니다.");
+    const callCost = currentCallAmount - playerBetThisRound;
+    const maxAvailableRaise = currentMoney - callCost;
+
+    if (maxAvailableRaise <= 0) {
+      alert("더 이상 추가 레이즈를 할 자본이 부족합니다. 올인 콜(All-in Call) 또는 폴드(Fold)를 진행해주세요.");
+      setRaiseBetAmount(0);
       return;
     }
+
+    if (raiseAmt > maxAvailableRaise) {
+      alert(`더 이상 추가 레이즈할 자본이 부족합니다. 남은 전 재산인 ${formatMoney(maxAvailableRaise)}으로 올인 레이즈(All-in Raise)를 진행합니다.`);
+      raiseAmt = maxAvailableRaise;
+      setRaiseBetAmount(maxAvailableRaise);
+    }
+
+    const totalNewBet = currentCallAmount + raiseAmt;
+    const additionalCost = totalNewBet - playerBetThisRound;
 
     onUpdateMoney(-additionalCost);
     setPlayerBetThisRound(totalNewBet);
@@ -794,6 +812,10 @@ export default function HoldemGame({ playerName, currentMoney, onUpdateMoney, on
             <div
               key={chip.id}
               className={`casino-chip ${chipClass} ${chip.isPlayer ? "from-player" : "from-computer"} phase-${chip.phase}`}
+              style={{
+                "--rand-offset-x": `${chip.xOffset}px`,
+                "--rand-offset-y": `${chip.yOffset}px`
+              }}
             >
               <span>{chip.value >= 10000 ? `${chip.value / 10000}만` : chip.value}</span>
             </div>

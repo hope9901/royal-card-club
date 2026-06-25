@@ -1,36 +1,16 @@
 import React from "react";
 
-// SVG components for card suits
+// Unicode components for card suits
 const SuitIcon = ({ suit }) => {
   switch (suit) {
     case "spades":
-      return (
-        <svg viewBox="0 0 100 100" className="suit-svg spade-color">
-          <path d="M50,15 C35,40 10,45 10,65 C10,80 25,90 50,80 C75,90 90,80 90,65 C90,45 65,40 50,15 Z" />
-          <path d="M50,65 L35,90 L65,90 Z" />
-        </svg>
-      );
+      return <span className="suit-char spade-color">♠</span>;
     case "hearts":
-      return (
-        <svg viewBox="0 0 100 100" className="suit-svg heart-color">
-          <path d="M50,30 C50,10 15,10 15,40 C15,65 50,85 50,90 C50,85 85,65 85,40 C85,10 50,10 50,30 Z" />
-        </svg>
-      );
+      return <span className="suit-char heart-color">♥</span>;
     case "diamonds":
-      return (
-        <svg viewBox="0 0 100 100" className="suit-svg diamond-color">
-          <path d="M50,10 L85,50 L50,90 L15,50 Z" />
-        </svg>
-      );
+      return <span className="suit-char diamond-color">♦</span>;
     case "clubs":
-      return (
-        <svg viewBox="0 0 100 100" className="suit-svg club-color">
-          <circle cx="50" cy="35" r="20" />
-          <circle cx="32" cy="60" r="20" />
-          <circle cx="68" cy="60" r="20" />
-          <path d="M50,55 L35,88 L65,88 Z" />
-        </svg>
-      );
+      return <span className="suit-char club-color">♣</span>;
     default:
       return null;
   }

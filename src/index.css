@@ -1056,9 +1056,26 @@ h1, h2, h3, h4, h5, h6 {
   transform: rotate(180deg);
 }
 
-/* Suit SVG Color overrides */
-.spade-color, .club-color { fill: #0f172a; }
-.heart-color, .diamond-color { fill: #b91c1c; }
+/* Suit SVG Color overrides & unicode char colors */
+.spade-color, .club-color { fill: #0f172a; color: #0f172a; }
+.heart-color, .diamond-color { fill: #b91c1c; color: #b91c1c; }
+
+/* Unicode suit characters high-contrast styling */
+.suit-char {
+  display: block;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1;
+  text-align: center;
+  user-select: none;
+}
+
+.corner-suit-wrapper .suit-char {
+  font-size: 14px;
+}
+
+.card-center-suit .suit-char {
+  font-size: 42px;
+}
 
 /* Back Face */
 .card-back {
@@ -1621,7 +1638,7 @@ h1, h2, h3, h4, h5, h6 {
   animation: collectToComputer 0.8s cubic-bezier(0.5, 0, 0.75, 0) forwards;
 }
 
-/* Throw animations */
+/* Throw animations - chips land at right side (82%) to avoid blocking middle texts */
 @keyframes throwFromPlayer {
   0% {
     bottom: -60px;
@@ -1634,7 +1651,7 @@ h1, h2, h3, h4, h5, h6 {
   }
   100% {
     bottom: calc(48% + var(--rand-offset-y, 0px));
-    left: calc(50% + var(--rand-offset-x, 0px));
+    left: calc(82% + var(--rand-offset-x, 0px));
     transform: translate(-50%, 0) scale(0.95) rotate(720deg);
   }
 }
@@ -1651,16 +1668,16 @@ h1, h2, h3, h4, h5, h6 {
   }
   100% {
     top: calc(42% + var(--rand-offset-y, 0px));
-    left: calc(50% + var(--rand-offset-x, 0px));
+    left: calc(82% + var(--rand-offset-x, 0px));
     transform: translate(-50%, 0) scale(0.95) rotate(-720deg);
   }
 }
 
-/* Collect animations */
+/* Collect animations - start collecting from the right side (82%) */
 @keyframes collectToPlayer {
   0% {
     bottom: calc(48% + var(--rand-offset-y, 0px));
-    left: calc(50% + var(--rand-offset-x, 0px));
+    left: calc(82% + var(--rand-offset-x, 0px));
     transform: translate(-50%, 0) scale(0.95) rotate(0deg);
     opacity: 1;
   }
@@ -1675,7 +1692,7 @@ h1, h2, h3, h4, h5, h6 {
 @keyframes collectToComputer {
   0% {
     top: calc(42% + var(--rand-offset-y, 0px));
-    left: calc(50% + var(--rand-offset-x, 0px));
+    left: calc(82% + var(--rand-offset-x, 0px));
     transform: translate(-50%, 0) scale(0.95) rotate(0deg);
     opacity: 1;
   }

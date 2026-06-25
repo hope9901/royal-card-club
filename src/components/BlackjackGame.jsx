@@ -32,7 +32,9 @@ export default function BlackjackGame({ playerName, currentMoney, onUpdateMoney,
           id: `chip-${Date.now()}-${Math.random()}`,
           value: val,
           isPlayer,
-          phase: "throwing" // "throwing", "collected"
+          phase: "throwing", // "throwing", "collected"
+          xOffset: Math.floor(Math.random() * 80 - 40),
+          yOffset: Math.floor(Math.random() * 40 - 20)
         });
         remaining -= val;
       }
@@ -43,7 +45,9 @@ export default function BlackjackGame({ playerName, currentMoney, onUpdateMoney,
         id: `chip-${Date.now()}-${Math.random()}`,
         value: remaining,
         isPlayer,
-        phase: "throwing"
+        phase: "throwing",
+        xOffset: Math.floor(Math.random() * 80 - 40),
+        yOffset: Math.floor(Math.random() * 40 - 20)
       });
     }
 
@@ -102,19 +106,25 @@ export default function BlackjackGame({ playerName, currentMoney, onUpdateMoney,
 
   // 3. Game Actions
   const handlePlaceBet = () => {
-    if (betAmount <= 0) {
+    let targetBetAmount = betAmount;
+    if (targetBetAmount <= 0) {
       alert("배팅 금액은 0원보다 커야 합니다.");
       return;
     }
-    if (betAmount > currentMoney) {
-      alert("보유 금액보다 많이 배팅할 수 없습니다.");
-      return;
+    if (targetBetAmount > currentMoney) {
+      if (currentMoney <= 0) {
+        alert("보유 머니가 부족하여 배팅을 시작할 수 없습니다. 무료 충전을 진행하시거나 로비로 이동해주세요.");
+        return;
+      }
+      alert(`보유 금액보다 많이 배팅할 수 없습니다. 남은 전 재산인 ${formatMoney(currentMoney)}으로 올인 배팅을 설정하고 시작합니다.`);
+      targetBetAmount = currentMoney;
+      setBetAmount(currentMoney);
     }
 
     // Deduct money and set current bet
-    onUpdateMoney(-betAmount);
-    setCurrentBet(betAmount);
-    throwChip(betAmount, true);
+    onUpdateMoney(-targetBetAmount);
+    setCurrentBet(targetBetAmount);
+    throwChip(targetBetAmount, true);
 
     // Reset hands and start game
     let currentDeck = [...deck];
@@ -188,16 +198,18 @@ export default function BlackjackGame({ playerName, currentMoney, onUpdateMoney,
 
   const handleDoubleDown = () => {
     if (gameState !== "playerTurn") return;
+    
+    let additionalBet = currentBet;
     if (currentMoney < currentBet) {
-      alert("더블 다운을 위한 추가 머니가 부족합니다.");
-      return;
+      additionalBet = currentMoney;
+      alert(`더블 다운을 위한 추가 머니가 부족합니다. 남은 보유 머니 전체인 ${formatMoney(additionalBet)}를 추가로 올인하여 더블 다운을 진행합니다.`);
     }
 
     // Deduct double down bet
-    onUpdateMoney(-currentBet);
-    const doubleBet = currentBet * 2;
+    onUpdateMoney(-additionalBet);
+    const doubleBet = currentBet + additionalBet;
     setCurrentBet(doubleBet);
-    throwChip(currentBet, true);
+    throwChip(additionalBet, true);
 
     // Draw exactly one card
     const currentDeck = [...deck];
@@ -472,7 +484,7 @@ export default function BlackjackGame({ playerName, currentMoney, onUpdateMoney,
               <button 
                 className="btn btn-secondary flex-1" 
                 onClick={handleDoubleDown}
-                disabled={currentMoney < currentBet}
+                disabled={currentMoney <= 0}
               >
                 Double Down
               </button>
@@ -510,6 +522,10 @@ export default function BlackjackGame({ playerName, currentMoney, onUpdateMoney,
             <div
               key={chip.id}
               className={`casino-chip ${chipClass} ${chip.isPlayer ? "from-player" : "from-computer"} phase-${chip.phase}`}
+              style={{
+                "--rand-offset-x": `${chip.xOffset || 0}px`,
+                "--rand-offset-y": `${chip.yOffset || 0}px`
+              }}
             >
               <span>{chip.value >= 10000 ? `${chip.value / 10000}만` : chip.value}</span>
             </div>
