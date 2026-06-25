@@ -18,6 +18,51 @@ export default function BlackjackGame({ playerName, currentMoney, onUpdateMoney,
   // Interactive Guide Tour State
   const [tourStep, setTourStep] = useState(null); // null means inactive
 
+  // Thrown Chips state for 3D simulation
+  const [thrownChips, setThrownChips] = useState([]);
+
+  const throwChip = (amount, isPlayer) => {
+    let remaining = amount;
+    const chipValues = [50000, 30000, 10000];
+    const newChips = [];
+
+    chipValues.forEach((val) => {
+      while (remaining >= val) {
+        newChips.push({
+          id: `chip-${Date.now()}-${Math.random()}`,
+          value: val,
+          isPlayer,
+          phase: "throwing" // "throwing", "collected"
+        });
+        remaining -= val;
+      }
+    });
+
+    if (remaining > 0) {
+      newChips.push({
+        id: `chip-${Date.now()}-${Math.random()}`,
+        value: remaining,
+        isPlayer,
+        phase: "throwing"
+      });
+    }
+
+    setThrownChips((prev) => [...prev, ...newChips]);
+  };
+
+  const collectPotToWinner = (isPlayerWinner) => {
+    setThrownChips((prev) =>
+      prev.map((chip) => ({
+        ...chip,
+        phase: isPlayerWinner ? "collect-player" : "collect-computer"
+      }))
+    );
+
+    setTimeout(() => {
+      setThrownChips([]);
+    }, 1000);
+  };
+
   const formatMoney = (amount) => {
     return new Intl.NumberFormat("ko-KR", { style: "currency", currency: "KRW" }).format(amount);
   };
@@ -69,6 +114,7 @@ export default function BlackjackGame({ playerName, currentMoney, onUpdateMoney,
     // Deduct money and set current bet
     onUpdateMoney(-betAmount);
     setCurrentBet(betAmount);
+    throwChip(betAmount, true);
 
     // Reset hands and start game
     let currentDeck = [...deck];
@@ -151,6 +197,7 @@ export default function BlackjackGame({ playerName, currentMoney, onUpdateMoney,
     onUpdateMoney(-currentBet);
     const doubleBet = currentBet * 2;
     setCurrentBet(doubleBet);
+    throwChip(currentBet, true);
 
     // Draw exactly one card
     const currentDeck = [...deck];
@@ -175,6 +222,7 @@ export default function BlackjackGame({ playerName, currentMoney, onUpdateMoney,
     // Refund half the bet
     const refund = Math.floor(currentBet / 2);
     setDealerHand(dealerHand.map(c => ({ ...c, faceUp: true })));
+    collectPotToWinner(false); // Chips collected by dealer
     resolveGame("lose", `기권하셨습니다. 배팅금의 절반인 ${formatMoney(refund)}이 환불됩니다.`, refund);
   };
 
@@ -234,6 +282,13 @@ export default function BlackjackGame({ playerName, currentMoney, onUpdateMoney,
     setMessage(msg);
     setCurrentBet(0);
 
+    // Resolve visual chips direction
+    if (type === "win" || type === "blackjack" || type === "push") {
+      collectPotToWinner(true);
+    } else {
+      collectPotToWinner(false);
+    }
+
     if (payout > 0) {
       onUpdateMoney(payout);
     }
@@ -244,6 +299,7 @@ export default function BlackjackGame({ playerName, currentMoney, onUpdateMoney,
     setDealerHand([]);
     setMessage("");
     setResultType("");
+    setThrownChips([]);
     setGameState("betting");
   };
 
@@ -440,6 +496,25 @@ export default function BlackjackGame({ playerName, currentMoney, onUpdateMoney,
             </div>
           )}
         </div>
+      </div>
+
+      {/* Thrown Chips Visual layer */}
+      <div className="thrown-chips-layer no-print">
+        {thrownChips.map((chip) => {
+          let chipClass = "chip-1k";
+          if (chip.value >= 50000) chipClass = "chip-5k";
+          else if (chip.value >= 30000) chipClass = "chip-3k";
+          else if (chip.value >= 10000) chipClass = "chip-1k";
+
+          return (
+            <div
+              key={chip.id}
+              className={`casino-chip ${chipClass} ${chip.isPlayer ? "from-player" : "from-computer"} phase-${chip.phase}`}
+            >
+              <span>{chip.value >= 10000 ? `${chip.value / 10000}만` : chip.value}</span>
+            </div>
+          );
+        })}
       </div>
 
       {/* Interactive Guide Overlay Tour */}

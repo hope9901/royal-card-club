@@ -32,6 +32,51 @@ export default function HoldemGame({ playerName, currentMoney, onUpdateMoney, on
   // Interactive Tour State
   const [tourStep, setTourStep] = useState(null);
 
+  // Thrown Chips state for 3D simulation
+  const [thrownChips, setThrownChips] = useState([]);
+
+  const throwChip = (amount, isPlayer) => {
+    let remaining = amount;
+    const chipValues = [50000, 30000, 10000];
+    const newChips = [];
+
+    chipValues.forEach((val) => {
+      while (remaining >= val) {
+        newChips.push({
+          id: `chip-${Date.now()}-${Math.random()}`,
+          value: val,
+          isPlayer,
+          phase: "throwing" // "throwing", "collected"
+        });
+        remaining -= val;
+      }
+    });
+
+    if (remaining > 0) {
+      newChips.push({
+        id: `chip-${Date.now()}-${Math.random()}`,
+        value: remaining,
+        isPlayer,
+        phase: "throwing"
+      });
+    }
+
+    setThrownChips((prev) => [...prev, ...newChips]);
+  };
+
+  const collectPotToWinner = (isPlayerWinner) => {
+    setThrownChips((prev) =>
+      prev.map((chip) => ({
+        ...chip,
+        phase: isPlayerWinner ? "collect-player" : "collect-computer"
+      }))
+    );
+
+    setTimeout(() => {
+      setThrownChips([]);
+    }, 1000);
+  };
+
   const formatMoney = (amount) => {
     return new Intl.NumberFormat("ko-KR", { style: "currency", currency: "KRW" }).format(amount);
   };
@@ -53,6 +98,10 @@ export default function HoldemGame({ playerName, currentMoney, onUpdateMoney, on
     setPlayerBetThisRound(MIN_ANTE);
     setComputerBetThisRound(MIN_ANTE);
     setCurrentCallAmount(MIN_ANTE);
+
+    // Throw ante chips from both players
+    throwChip(MIN_ANTE, true);
+    throwChip(MIN_ANTE, false);
 
     let currentDeck = shuffleDeck(createDeck());
     
@@ -98,6 +147,7 @@ export default function HoldemGame({ playerName, currentMoney, onUpdateMoney, on
       onUpdateMoney(-allInAmount);
       setPlayerBetThisRound((prev) => prev + allInAmount);
       setPot((prev) => prev + allInAmount);
+      throwChip(allInAmount, true);
 
       setMessage(`플레이어가 남은 전 재산 ${formatMoney(allInAmount)}을 모두 걸고 올인(All-in Call) 했습니다!`);
       setTimeout(() => {
@@ -109,6 +159,7 @@ export default function HoldemGame({ playerName, currentMoney, onUpdateMoney, on
     onUpdateMoney(-callCost);
     setPlayerBetThisRound(currentCallAmount);
     setPot(prev => prev + callCost);
+    throwChip(callCost, true);
 
     setMessage("콜을 하셨습니다. 다음 단계로 진행합니다.");
     setTimeout(() => {
@@ -173,6 +224,7 @@ export default function HoldemGame({ playerName, currentMoney, onUpdateMoney, on
     onUpdateMoney(-additionalCost);
     setPlayerBetThisRound(totalNewBet);
     setCurrentCallAmount(totalNewBet);
+    throwChip(additionalCost, true);
     
     const nextPot = pot + additionalCost;
     setPot(nextPot);
@@ -187,6 +239,7 @@ export default function HoldemGame({ playerName, currentMoney, onUpdateMoney, on
     setMessage("폴드(Fold) 하셨습니다. 이번 판돈은 컴퓨터가 가져갑니다.");
     setGameState("showdown");
     setWinnerMessage("컴퓨터 승리 (플레이어 Fold)");
+    collectPotToWinner(false);
     setPot(0);
   };
 
@@ -287,6 +340,7 @@ export default function HoldemGame({ playerName, currentMoney, onUpdateMoney, on
         setComputerBetThisRound(prev => prev + aiRaise);
         setCurrentCallAmount(prev => prev + aiRaise);
         setPot(prev => prev + aiRaise);
+        throwChip(aiRaise, false);
         setMessage(`컴퓨터가 ${formatMoney(aiRaise)} 레이즈를 외쳤습니다.`);
       } else if (effectiveStrength === "strong") {
         // Modest raise (20k or 30k)
@@ -294,6 +348,7 @@ export default function HoldemGame({ playerName, currentMoney, onUpdateMoney, on
         setComputerBetThisRound(prev => prev + aiRaise);
         setCurrentCallAmount(prev => prev + aiRaise);
         setPot(prev => prev + aiRaise);
+        throwChip(aiRaise, false);
         setMessage(`컴퓨터가 ${formatMoney(aiRaise)} 레이즈를 외쳤습니다.`);
       } else {
         // Check back
@@ -316,6 +371,7 @@ export default function HoldemGame({ playerName, currentMoney, onUpdateMoney, on
           
           setComputerBetThisRound(totalAiBet);
           setCurrentCallAmount(totalAiBet);
+          throwChip(callCost + reraiseDiff, false);
           
           const nextPot = latestPot + callCost + reraiseDiff;
           setPot(nextPot);
@@ -325,6 +381,7 @@ export default function HoldemGame({ playerName, currentMoney, onUpdateMoney, on
           // Just call
           setComputerBetThisRound(targetBet);
           setPot(prev => prev + callCost);
+          throwChip(callCost, false);
           setMessage("컴퓨터가 플레이어의 레이즈를 콜(Call) 하였습니다.");
           setTimeout(() => {
             advanceStage();
@@ -334,6 +391,7 @@ export default function HoldemGame({ playerName, currentMoney, onUpdateMoney, on
         // Call the raise
         setComputerBetThisRound(targetBet);
         setPot(prev => prev + callCost);
+        throwChip(callCost, false);
         setMessage("컴퓨터가 플레이어의 레이즈를 콜(Call) 하였습니다.");
         setTimeout(() => {
           advanceStage();
@@ -343,6 +401,7 @@ export default function HoldemGame({ playerName, currentMoney, onUpdateMoney, on
         if (callCost <= 30000) {
           setComputerBetThisRound(targetBet);
           setPot(prev => prev + callCost);
+          throwChip(callCost, false);
           setMessage("컴퓨터가 고민 끝에 콜(Call)을 받았습니다.");
           setTimeout(() => {
             advanceStage();
@@ -352,6 +411,7 @@ export default function HoldemGame({ playerName, currentMoney, onUpdateMoney, on
           setMessage("컴퓨터가 추가 베팅이 너무 부담스러워 폴드(Fold) 하였습니다.");
           setGameState("showdown");
           setWinnerMessage(`${playerName} 승리 (컴퓨터 Fold)`);
+          collectPotToWinner(true);
           onUpdateMoney(latestPot);
           setPot(0);
         }
@@ -360,6 +420,7 @@ export default function HoldemGame({ playerName, currentMoney, onUpdateMoney, on
         setMessage("컴퓨터가 카드 세기가 부족하여 폴드(Fold) 하였습니다.");
         setGameState("showdown");
         setWinnerMessage(`${playerName} 승리 (컴퓨터 Fold)`);
+        collectPotToWinner(true);
         onUpdateMoney(latestPot);
         setPot(0);
       }
@@ -459,14 +520,17 @@ export default function HoldemGame({ playerName, currentMoney, onUpdateMoney, on
 
     if (isDraw) {
       setWinnerMessage("🤝 무승부 (Split Pot)");
+      collectPotToWinner(true);
       onUpdateMoney(Math.floor(pot / 2));
     } else if (isPlayerWinner) {
       setWinnerMessage(`🏆 ${playerName} 승리!`);
+      collectPotToWinner(true);
       onUpdateMoney(pot);
       // Highlight winning cards IDs
       setWinningCards(pEvaluation.bestCards.map(c => c.id));
     } else {
       setWinnerMessage("💀 컴퓨터 승리");
+      collectPotToWinner(false);
       setWinningCards(cEvaluation.bestCards.map(c => c.id));
     }
 
@@ -482,6 +546,7 @@ export default function HoldemGame({ playerName, currentMoney, onUpdateMoney, on
     setPlayerBestComboName("");
     setComputerBestComboName("");
     setWinningCards([]);
+    setThrownChips([]);
     setGameState("ante");
     setMessage("안테를 지불하고 다음 게임을 시작해 보세요.");
   };
@@ -695,7 +760,7 @@ export default function HoldemGame({ playerName, currentMoney, onUpdateMoney, on
                 <button 
                   className="btn btn-secondary text-flame" 
                   onClick={handleRaise}
-                  disabled={currentMoney < (currentCallAmount + 10000 - playerBetThisRound) || raiseBetAmount <= 0}
+                  disabled={currentMoney <= (currentCallAmount - playerBetThisRound) || raiseBetAmount <= 0}
                 >
                   <Flame size={14} /> Raise (+{formatMoney(raiseBetAmount)})
                 </button>
@@ -715,6 +780,25 @@ export default function HoldemGame({ playerName, currentMoney, onUpdateMoney, on
             </div>
           )}
         </div>
+      </div>
+
+      {/* Thrown Chips Visual layer */}
+      <div className="thrown-chips-layer no-print">
+        {thrownChips.map((chip) => {
+          let chipClass = "chip-1k";
+          if (chip.value >= 50000) chipClass = "chip-5k";
+          else if (chip.value >= 30000) chipClass = "chip-3k";
+          else if (chip.value >= 10000) chipClass = "chip-1k";
+
+          return (
+            <div
+              key={chip.id}
+              className={`casino-chip ${chipClass} ${chip.isPlayer ? "from-player" : "from-computer"} phase-${chip.phase}`}
+            >
+              <span>{chip.value >= 10000 ? `${chip.value / 10000}만` : chip.value}</span>
+            </div>
+          );
+        })}
       </div>
 
       {/* Interactive Guide Tour */}

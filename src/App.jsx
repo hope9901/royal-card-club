@@ -32,7 +32,7 @@ export default function App() {
       setMaxBalance(savedMax ? parseInt(savedMax, 10) : 100000);
       fetchRankings();
     }
-  }, [playerName]);
+  }, [playerName, currentView]);
 
   const fetchRankings = async () => {
     try {

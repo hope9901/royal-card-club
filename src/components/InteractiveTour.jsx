@@ -14,7 +14,7 @@ export default function InteractiveTour({ steps, activeStep, onNext, onPrev, onC
       <div className="tour-backdrop" onClick={onComplete}></div>
 
       {/* Guide dialog box */}
-      <div className="tour-dialog glass hover-lift">
+      <div className="tour-dialog glass">
         <div className="tour-header">
           <div className="tour-title-group">
             <Sparkles size={16} className="tour-sparkle" />
