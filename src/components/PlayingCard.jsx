@@ -46,9 +46,6 @@ export default function PlayingCard({ suit, name, faceUp = true, isHighlighted =
           {/* Top Left Corner */}
           <div className="card-corner top-left">
             <span className="card-value-text">{name}</span>
-            <div className="corner-suit-wrapper">
-              <SuitIcon suit={suit} />
-            </div>
           </div>
           
           {/* Center Giant Suit */}
@@ -59,9 +56,6 @@ export default function PlayingCard({ suit, name, faceUp = true, isHighlighted =
           {/* Bottom Right Corner */}
           <div className="card-corner bottom-right">
             <span className="card-value-text">{name}</span>
-            <div className="corner-suit-wrapper">
-              <SuitIcon suit={suit} />
-            </div>
           </div>
         </div>
 
